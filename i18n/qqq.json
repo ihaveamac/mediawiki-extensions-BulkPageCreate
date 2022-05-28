@@ -1,0 +1,9 @@
+{
+    "@metadata": {
+        "authors": [
+            "ihaveahax"
+        ]
+    },
+    "bulkpagecreate-desc": "Description for the BulkPageCreate extension",
+    "bulkpagecreate-extensionname": "Name of the BulkPageCreate extension"
+}

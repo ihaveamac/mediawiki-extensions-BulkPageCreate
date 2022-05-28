@@ -1,0 +1,55 @@
+{
+	"name": "Bulk Page Create",
+	"namemsg": "bpc-extensionname",
+	"author": [
+		"ihaveahax"
+	],
+	"url": "https://github.com/ihaveamac/mediawiki-extensions-BulkPageCreate",
+	"description": "Mass-create pages with the same content",
+	"descriptionmsg": "bpc-desc",
+	"license-name": "MIT",
+	"type": "specialpage",
+	"requires": {
+		"MediaWiki": ">= 1.37.0"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\BulkPageCreate\\": "includes/"
+	},
+	"config": {
+		"BPCMaxPageTargets": {
+			"description": "Maximum number of pages that can be targeted at once",
+			"value": 30
+		}
+	},
+	"ResourceModules": {
+		"ext.BulkPageCreate": {
+			"styles": "ext.BulkPageCreate.css"
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "modules",
+		"remoteExtPath": "BulkPageCreate/modules"
+	},
+	"AvailableRights": [
+		"bulkpagecreate",
+		"bulkpagecreate-overwrite"
+	],
+	"SpecialPages": {
+		"BulkPageCreate": {
+			"class": "MediaWiki\\Extension\\BulkPageCreate\\SpecialBulkPageCreate",
+			"services": [
+				"RevisionStore",
+				"PermissionManager"
+			]
+		}
+	},
+	"JobClasses": {
+		"BulkPageCreateJob": "MediaWiki\\Extension\\BulkPageCreate\\BulkPageCreateJob"
+	},
+	"MessagesDirs": {
+		"BulkPageCreate": [
+			"i18n"
+		]
+	},
+	"manifest_version": 2
+}

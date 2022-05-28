@@ -1,0 +1,17 @@
+{
+    "@metadata": {
+        "authors": [
+            "ihaveahax"
+        ]
+    },
+    "bulkpagecreate-desc": "Mass-create pages with the same content",
+    "bulkpagecreate-extensionname": "Bulk Page Create",
+    "bulkpagecreate": "Bulk page creation",
+    "bulkpagecreate-summary": "Use the form below to create pages in bulk, using a page's content as the source.",
+    "action-bulkpagecreate": "create pages in bulk",
+    "tag-bulkpagecreate": "Bulk page creation",
+    "bulkpagecreate-sourcepage": "Source page to use",
+    "bulkpagecreate-targetpages": "Target pages",
+    "bulkpagecreate-too-many-targets": "Too many pages were specified (maximum is $1)",
+    "bulkpagecreate-edit-summary": "Bulk creation of pages from [[$1]]"
+}
