@@ -20,8 +20,14 @@ class BulkPageCreateParser {
 	/** @var Config */
 	private $config;
 
+	/** @var Status */
+	private $status;
+
 	/** @var array */
 	private $params;
+
+	/** @var array */
+	private $badPages;
 
 	/**
 	 * The most amount of parameters a single page has. Used when building the HTML table, where
@@ -40,7 +46,7 @@ class BulkPageCreateParser {
 	 * @param array $formData
 	 * @return Status
 	 */
-	public function parseFormSubmit( array $formData ) {
+	public function parseFormSubmit( array $formData ): Status {
 		// at this point we can probably assume this title exists
 		// (it has been validated earlier by HTMLTitleTextField)
 		/** @var string $sourceTitle */
@@ -51,7 +57,7 @@ class BulkPageCreateParser {
 		$this->sourcePage = Title::newFromText( $sourceTitle );
 		// TODO: check namespace here
 
-		$status = new Status();
+		$this->status = new Status();
 
 		$currentCount = 0;
 		$maxCount = $this->config->get( 'BPCMaxPageTargets' );
@@ -59,16 +65,18 @@ class BulkPageCreateParser {
 		$this->params = [];
 		// https://stackoverflow.com/a/14789147
 		$sep = "\n";
-		$line = trim( strtok( $sourcePagesRaw, $sep ) );
+		$line = strtok( $sourcePagesRaw, $sep );
 		while ( $line !== false ) {
+			$line = trim( $line );
 			if ( $line === '' ) {
+				$line = strtok( $sep );
 				continue;
 			}
 			$currentCount ++;
 			if ( $currentCount > $maxCount ) {
-				$status->fatal( 'bulkpagecreate-too-many-targets', $maxCount );
+				$this->status->fatal( 'bulkpagecreate-too-many-targets', $maxCount );
 
-				return $status;
+				return $this->status;
 			}
 
 			$lineParams = explode( "|", $line );
@@ -80,10 +88,10 @@ class BulkPageCreateParser {
 
 			$this->params[] = $lineInfo;
 
-			$line = strtok( $sep );
+			$line = trim( strtok( $sep ) );
 		}
 
-		return $status;
+		return $this->status;
 	}
 
 	public function buildTable(): string {
@@ -129,16 +137,6 @@ class BulkPageCreateParser {
 
 		$jobs = [];
 
-//		$job = new BulkPageCreateJob( [
-//			'userId' => $userId,
-//			'sourceNamespace' => $sourceTitleNS,
-//			'sourceTitle' => $sourceTitleKey,
-//			'targetNamespace' => $target->getNamespace(),
-//			'targetTitle' => $target->getDBkey(),
-//			'otherArray' => [ 'abc', 'def' ],
-//		] );
-//		$job->run();
-
 		foreach ( $this->params as $param ) {
 			/** @var Title $targetTitle */
 			$targetTitle = $param[0];
@@ -162,12 +160,5 @@ class BulkPageCreateParser {
 	 */
 	public function getParams(): array {
 		return $this->params;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getMostPageParams(): int {
-		return $this->mostPageParams;
 	}
 }

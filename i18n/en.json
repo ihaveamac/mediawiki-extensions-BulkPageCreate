@@ -13,5 +13,6 @@
     "bulkpagecreate-sourcepage": "Source page to use",
     "bulkpagecreate-targetpages": "Target pages",
     "bulkpagecreate-too-many-targets": "Too many pages were specified (maximum is $1)",
-    "bulkpagecreate-edit-summary": "Bulk creation of pages from [[$1]]"
+    "bulkpagecreate-edit-summary": "Bulk creation of pages from [[$1]] (revid $2)",
+    "bulkpagecreate-queued": "The creation jobs will be put in the queue."
 }

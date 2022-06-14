@@ -45,6 +45,12 @@ I wanted something that would be faster and easier to set up than a bot. I also 
 
 The process happens through the `Special:BulkPageCreate` special page.
 
+### Notes
+
+The content model of the source page is used. It's assumed to be a subclass of TextContent (meaning the default content handlers for CSS, JS, and Wikitext will work). I'm not sure what happens yet if you try to use this on two pages with different content models.
+
+This works on the revision ID of the page at the time the jobs are created.
+
 ## Configuration
 
 ### User rights

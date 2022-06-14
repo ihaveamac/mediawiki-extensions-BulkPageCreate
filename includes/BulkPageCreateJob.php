@@ -6,10 +6,8 @@ use ContentHandler;
 use Job;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
-use MediaWiki\User\UserFactory;
 use MWException;
 use Title;
-use Wikimedia\Dodo\Comment;
 use WikiPage;
 use CommentStoreComment;
 
@@ -34,31 +32,42 @@ class BulkPageCreateJob extends Job {
 	/**
 	 * @inheritDoc
 	 */
-	public function run() {
-		$userFactory = MediaWikiServices::getInstance()->getUserFactory();
+	public function run(): bool {
+		$services = MediaWikiServices::getInstance();
+		$userFactory = $services->getUserFactory();
 		$user = $userFactory->newFromId( 1 );
 		$sourcePageTitle =
 			Title::makeTitle( $this->params['sourceNamespace'], $this->params['sourceTitle'] );
 		$targetPageTitle = $this->title;
 
-		$sourceWikiPage = new WikiPage( $sourcePageTitle );
+		$revisionStore = $services->getRevisionStore();
+		$revision =
+			$revisionStore->getRevisionByTitle( $sourcePageTitle, $this->params['sourceRevId'] );
+		$revisionContent = $revision->getContent( SlotRecord::MAIN );
 		$targetWikiPage = new WikiPage( $targetPageTitle );
-		$targetText = $sourceWikiPage->getContent()->getText();
-		// TODO: get the specific revision (COMMENT ABOVE)
-		// TODO: text replacement
-		$targetContent =
-			ContentHandler::makeContent( $targetText, $targetPageTitle,
-				$sourceWikiPage->getContentModel() );
+		$targetText = $revisionContent->getText();
+
+		foreach ( $this->params['targetParams'] as $index => $value ) {
+			$needle = '__BPC' . ( $index + 1 ) . '__';
+			$targetText = str_replace( $needle, $value, $targetText );
+		}
+
 		try {
+			$targetContent =
+				ContentHandler::makeContent( $targetText, $targetPageTitle,
+					$revisionContent->getContentHandler()->getModelID() );
 			$updater = $targetWikiPage->newPageUpdater( $user );
 			$updater->setContent( SlotRecord::MAIN, $targetContent );
 			$updater->addTag( 'bulkpagecreate' );
 			$comment =
 				CommentStoreComment::newUnsavedComment( wfMessage( 'bulkpagecreate-edit-summary',
-					$sourcePageTitle->getFullText() )->inContentLanguage()->plain() );
+					$sourcePageTitle->getFullText(), $revision->getId() )
+					->inContentLanguage()
+					->plain() );
 			$newRev = $updater->saveRevision( $comment );
 		}
 		catch ( MWException $e ) {
+			// idk lol
 			return false;
 		}
 
