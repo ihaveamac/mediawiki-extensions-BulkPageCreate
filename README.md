@@ -1,11 +1,11 @@
 # WORK IN PROGRESS
 
-This extension is not even remotely finished. It does the very basic job of copying page text and that's it. It doesn't check for namespaces or do text replacement right now.
+This extension is not done. It copies pages and does basic text replacement. It does not check namespaces or if it's going to overwrite pages.
 
 Things to do:
 * Check target namespaces
 * Check source namespace
-* Do text replacement
+* Check for page overwriting
 
 # BulkPageCreate
 
@@ -45,6 +45,16 @@ I wanted something that would be faster and easier to set up than a bot. I also 
 
 The process happens through the `Special:BulkPageCreate` special page.
 
+One page is used as the source. A list of pages are used as targets to copy to.
+
+Each line has one page. Additional parameters are added by using `|` as a separator. These will replace `__BPC#__` in the text, starting from 1.
+
+For example, this line will copy to the page `Mario Kart 7` with parameters `3DS` replacing `__BPC1__` and `2011` replacing `__BPC2__`:
+
+```
+Mario Kart 7|3DS|2011
+```
+
 ### Notes
 
 The content model of the source page is used. It's assumed to be a subclass of TextContent (meaning the default content handlers for CSS, JS, and Wikitext will work). I'm not sure what happens yet if you try to use this on two pages with different content models.
@@ -68,6 +78,8 @@ $wgGroupPermissions['sysop']['bulkpagecreate'] = true;
 ### Parameters
 
 #### $wgBPCMaxPageTargets
+
+Defaults to 30
 
 Maximum amount of pages that can be queued at once. In other words, the amount of pages that can be put in the list at Special:BulkPageCreate.
 
